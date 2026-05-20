@@ -1,3 +1,0 @@
-/home/CIO/Code/cFinalWork/Cmake/CMakeFiles/StudentManagementSystem.dir
-/home/CIO/Code/cFinalWork/Cmake/CMakeFiles/edit_cache.dir
-/home/CIO/Code/cFinalWork/Cmake/CMakeFiles/rebuild_cache.dir
