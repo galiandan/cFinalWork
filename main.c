@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_NAME_LEN 3
+#define MAX_NAME_LEN 20
 #define MAX_ID_LEN 20
 #define MAX_CNAME_LEN 50
 #define MAX_COURSES 7
@@ -35,6 +35,7 @@ typedef struct
 Course courses[MAX_COURSES];
 Student students[MAX_STUDENTS];
 int student_count = 0;
+int max_course_id = 0;
 
 void init_courses(void);
 int load_courses(const char* filename);
@@ -76,6 +77,7 @@ void init_courses()
 {
     const char* names[] = {"数据结构", "操作系统", "计算机网络", "数据库原理",
                            "软件工程", "人工智能", "编译原理"};
+    max_course_id = 0;
     for (int i = 0; i < MAX_COURSES; i++)
     {
         courses[i].id = i + 1;
@@ -84,6 +86,7 @@ void init_courses()
         courses[i].capacity = 10 * (i + 1);
         courses[i].credits = i + 1;
         courses[i].enrolled = 0;
+        max_course_id = courses[i].id;
     }
 }
 
@@ -96,6 +99,7 @@ int load_courses(const char* filename)
         return 0;
     }
     int count = 0;
+    max_course_id = 0;
     char buf[256];
     fgets(buf, sizeof(buf), fp);
     for (int i = 0; i < MAX_COURSES && fgets(buf, sizeof(buf), fp); i++)
@@ -118,6 +122,8 @@ int load_courses(const char* filename)
         t = strtok(NULL, "|\n");
         if (t)
             courses[i].credits = atoi(t);
+        if (courses[i].id > max_course_id)
+            max_course_id = courses[i].id;
         count++;
     }
     fclose(fp);
@@ -513,7 +519,7 @@ static void on_add_course_to_system(GtkButton* btn, gpointer user_data)
             {
                 if (courses[i].id == 0)
                 {
-                    courses[i].id = i + 1;
+                    courses[i].id = ++max_course_id;
                     strncpy(courses[i].name, name, MAX_CNAME_LEN - 1);
                     courses[i].name[MAX_CNAME_LEN - 1] = '\0';
                     courses[i].capacity = cap;
@@ -817,11 +823,11 @@ static void on_drop_course(GtkButton* btn, gpointer user_data)
     gint cid;
     gtk_tree_model_get(model, &iter, 0, &cid, -1);
     Student* s = &students[s_idx];
-    if (s->num_courses <= 3)
+    if (s->num_courses <= 1)
     {
         GtkWidget* d = gtk_message_dialog_new(
             GTK_WINDOW(g_widgets.window), GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING,
-            GTK_BUTTONS_OK, "至少保留3门!");
+            GTK_BUTTONS_OK, "至少保留1门!");
         gtk_dialog_run(GTK_DIALOG(d));
         gtk_widget_destroy(d);
         return;
@@ -835,6 +841,12 @@ static void on_drop_course(GtkButton* btn, gpointer user_data)
                 s->courses[j] = s->courses[j + 1];
             s->num_courses--;
             s->total_credits = 0;
+            for (int j = 0; j < s->num_courses; j++)
+            {
+                int ci = get_course_index(s->courses[j]);
+                if (ci >= 0)
+                    s->total_credits += courses[ci].credits;
+            }
             save_students("students.txt");
             refresh_all_views();
             return;
@@ -1040,9 +1052,17 @@ void create_ui(int argc, char* argv[])
     gtk_widget_set_vexpand(s_scroll, TRUE);
     gtk_container_add(GTK_CONTAINER(s_scroll), student_table);
     gtk_box_pack_start(GTK_BOX(student_view), s_scroll, TRUE, TRUE, 0);
+    GtkWidget* s_btn_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     GtkWidget* s_btn = gtk_button_new_with_label("添加学生");
-    gtk_box_pack_start(GTK_BOX(student_view), s_btn, FALSE, FALSE, 5);
+    GtkWidget* s_edit_btn = gtk_button_new_with_label("编辑学生");
+    GtkWidget* s_del_btn = gtk_button_new_with_label("删除学生");
+    gtk_box_pack_start(GTK_BOX(s_btn_box), s_btn, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(s_btn_box), s_edit_btn, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(s_btn_box), s_del_btn, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(student_view), s_btn_box, FALSE, FALSE, 5);
     g_signal_connect(s_btn, "clicked", G_CALLBACK(on_add_student), NULL);
+    g_signal_connect(s_edit_btn, "clicked", G_CALLBACK(on_edit_student), NULL);
+    g_signal_connect(s_del_btn, "clicked", G_CALLBACK(on_delete_student), NULL);
     gtk_notebook_append_page(GTK_NOTEBOOK(g_widgets.notebook), student_view,
                              gtk_label_new("学生管理"));
 
