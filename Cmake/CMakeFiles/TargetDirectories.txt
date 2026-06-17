@@ -1,3 +1,0 @@
-/mnt/data/Code/cFinalWork/Cmake/CMakeFiles/app.dir
-/mnt/data/Code/cFinalWork/Cmake/CMakeFiles/edit_cache.dir
-/mnt/data/Code/cFinalWork/Cmake/CMakeFiles/rebuild_cache.dir

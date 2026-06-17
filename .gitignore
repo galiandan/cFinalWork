@@ -1,0 +1,14 @@
+build/
+Cmake/
+cmake-build-*/
+
+*.o
+*.obj
+*.out
+*.exe
+
+app
+main
+test
+
+students_export.csv
