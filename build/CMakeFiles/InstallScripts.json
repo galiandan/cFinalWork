@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/mnt/data/Code/cFinalWork/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

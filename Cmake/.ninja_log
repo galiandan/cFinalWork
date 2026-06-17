@@ -1,0 +1,8 @@
+# ninja log v7
+1	21	1781685240288242400	CMakeFiles/app.dir/src/app_paths.c.o	d18e0daaa1a38be5
+1	126	1781685240288242400	CMakeFiles/app.dir/src/model.c.o	4d4bdea9f91a3b7
+1	128	1781685240288242400	CMakeFiles/app.dir/src/main.c.o	217ab1533ef9b10d
+1	144	1781685240288242400	CMakeFiles/app.dir/src/storage.c.o	1b2ab3042986b3f7
+1	171	1781685240288242400	CMakeFiles/app.dir/src/service.c.o	7f88c637d458db37
+1	187	1781685240288242400	CMakeFiles/app.dir/src/ui.c.o	c4bbf98a38d1184d
+187	230	1781685240474242400	app	cbeab320b61c4ed6
